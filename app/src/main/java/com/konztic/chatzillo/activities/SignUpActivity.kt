@@ -2,10 +2,11 @@ package com.konztic.chatzillo.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.konztic.chatzillo.R
+import com.konztic.chatzillo.utilities.goToActivity
+import com.konztic.chatzillo.utilities.toast
 import kotlinx.android.synthetic.main.activity_sign_up.*
 
 
@@ -17,9 +18,9 @@ class SignUpActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_up)
 
         btn_go_login.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            goToActivity<LoginActivity> {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
         }
 
         btn_sign_up.setOnClickListener {
@@ -29,7 +30,7 @@ class SignUpActivity : AppCompatActivity() {
             if (isValidEmailAndPassword(email, password)) {
                 signUpByEmail(email, password)
             } else {
-                Toast.makeText(this, "Please fill all data and confirm that your password is correct", Toast.LENGTH_SHORT).show()
+                toast("Please fill all data and confirm that your password is correct")
             }
         }
     }
@@ -37,17 +38,15 @@ class SignUpActivity : AppCompatActivity() {
     private fun signUpByEmail(email: String, password: String) {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
-                Toast.makeText(this, "An email has been sent to you. Please, confirm before sign in", Toast.LENGTH_SHORT).show()
+                toast("An email has been sent to you. Please, confirm before sign in")
             } else {
-                Toast.makeText(this, "An unexpected error occurred, please try again.", Toast.LENGTH_SHORT).show()
+                toast("An unexpected error occurred, please try again.")
             }
         }
     }
 
-    private fun isValidEmailAndPassword(email: String?, password: String?): Boolean {
-
-        return !email.isNullOrEmpty() ||
-                !password.isNullOrEmpty() ||
-                (password !== et_confirm_password.text.toString())
+    private fun isValidEmailAndPassword(email: String, password: String): Boolean {
+        return (email.isNotEmpty() && password.isNotEmpty()) &&
+            password.contentEquals(et_confirm_password.text.toString())
     }
 }

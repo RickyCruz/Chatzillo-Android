@@ -87,12 +87,12 @@
             android:background="@drawable/button_ripple_google_bg"
             android:text="@string/login_sign_in_google"
             android:textColor="@color/colorPrimaryText"
-            app:layout_constraintBottom_toTopOf="@+id/btn_sign_up"
+            app:layout_constraintBottom_toTopOf="@+id/btn_create_account"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
-            android:id="@+id/btn_sign_up"
+            android:id="@+id/btn_create_account"
             android:layout_width="match_parent"
             android:layout_height="@dimen/login_button_xl_height"
             android:background="@drawable/button_ripple_transparent_bg"
