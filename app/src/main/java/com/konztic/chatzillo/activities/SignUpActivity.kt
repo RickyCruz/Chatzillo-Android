@@ -21,6 +21,7 @@ class SignUpActivity : AppCompatActivity() {
             goToActivity<LoginActivity> {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
 
         btn_sign_up.setOnClickListener {
@@ -39,6 +40,10 @@ class SignUpActivity : AppCompatActivity() {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 toast("An email has been sent to you. Please, confirm before sign in")
+                goToActivity<LoginActivity> {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             } else {
                 toast("An unexpected error occurred, please try again.")
             }
