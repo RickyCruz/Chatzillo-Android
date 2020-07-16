@@ -5,8 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.konztic.chatzillo.R
-import com.konztic.chatzillo.utilities.goToActivity
-import com.konztic.chatzillo.utilities.toast
+import com.konztic.chatzillo.utilities.*
 import kotlinx.android.synthetic.main.activity_sign_up.*
 
 
@@ -27,12 +26,41 @@ class SignUpActivity : AppCompatActivity() {
         btn_sign_up.setOnClickListener {
             val email = et_email.text.toString()
             val password = et_password.text.toString()
+            val confirmPassword = et_confirm_password.text.toString()
 
-            if (isValidEmailAndPassword(email, password)) {
+            if (isValidEmail(email) && isValidPassword(password) && isValidConfirmPassword(password, confirmPassword)) {
                 signUpByEmail(email, password)
             } else {
-                toast("Please fill all data and confirm that your password is correct")
+                toast("Please verify that the information is correct")
             }
+        }
+
+        /*et_email.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                if (isValidEmail(et_email.text.toString())) {
+                    et_email.error = "The email is not valid"
+                } else {
+                    et_email.error = ""
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })*/
+
+        et_email.customValidation {
+            et_email.error = if (isValidEmail(it)) null else "Email is not valid"
+        }
+
+        et_password.customValidation {
+            et_password.error = if (isValidPassword(it)) null else "Password should contain 1 lowercase, 1 uppercase, 1 number, 1 special character and 6 characters length at least"
+        }
+
+        et_confirm_password.customValidation {
+            et_confirm_password.error = if (isValidConfirmPassword(et_password.text.toString(), it)) null else "Confirm Password does not match with Password"
         }
     }
 
@@ -48,10 +76,5 @@ class SignUpActivity : AppCompatActivity() {
                 toast("An unexpected error occurred, please try again.")
             }
         }
-    }
-
-    private fun isValidEmailAndPassword(email: String, password: String): Boolean {
-        return (email.isNotEmpty() && password.isNotEmpty()) &&
-            password.contentEquals(et_confirm_password.text.toString())
     }
 }

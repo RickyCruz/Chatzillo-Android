@@ -4,8 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.firebase.auth.FirebaseAuth
 import com.konztic.chatzillo.R
-import com.konztic.chatzillo.utilities.goToActivity
-import com.konztic.chatzillo.utilities.toast
+import com.konztic.chatzillo.utilities.*
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
@@ -19,10 +18,10 @@ class LoginActivity : AppCompatActivity() {
             val email = et_email.text.toString()
             val password = et_password.text.toString()
 
-            if (isValidEmailAndPassword(email, password)) {
+            if (isValidEmail(email) && isValidPassword(password)) {
                 logInByEmail(email, password)
             } else {
-                toast("Please fill all data and confirm that your password is correct")
+                toast("The email or password is incorrect")
             }
         }
 
@@ -35,6 +34,14 @@ class LoginActivity : AppCompatActivity() {
             goToActivity<SignUpActivity>()
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
         }
+
+        et_email.customValidation {
+            et_email.error = if (isValidEmail(it)) null else "Email is not valid"
+        }
+
+        et_password.customValidation {
+            et_password.error = if (isValidPassword(it)) null else "Password should contain 1 lowercase, 1 uppercase, 1 number, 1 special character and 6 characters length at least"
+        }
     }
 
     private fun logInByEmail(email: String, password: String) {
@@ -45,9 +52,5 @@ class LoginActivity : AppCompatActivity() {
                 toast("An unexpected error occurred, please try again.")
             }
         }
-    }
-
-    private fun isValidEmailAndPassword(email: String, password: String): Boolean {
-        return email.isNotEmpty() && password.isNotEmpty()
     }
 }
