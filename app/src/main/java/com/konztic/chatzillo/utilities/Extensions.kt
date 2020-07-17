@@ -44,7 +44,7 @@ fun Activity.isValidEmail(email: String): Boolean {
 }
 
 fun Activity.isValidPassword(password: String): Boolean {
-    val passwordPattern = "^(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[#?!@\\\$%^&*])(?=\\\\S+\$).{6,}\$".toRegex()
+    val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}$".toRegex()
 
     return passwordPattern.matches(password)
 }

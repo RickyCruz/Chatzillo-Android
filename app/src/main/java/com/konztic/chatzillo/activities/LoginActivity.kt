@@ -1,14 +1,23 @@
 package com.konztic.chatzillo.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.konztic.chatzillo.R
 import com.konztic.chatzillo.utilities.*
 import kotlinx.android.synthetic.main.activity_login.*
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
     private val mAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val mGoogleApiClient: GoogleApiClient by lazy { getGoogleApiClient() }
+    private val RC_GOOGLE_SIGN_IN = 666;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +32,12 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 toast("The email or password is incorrect")
             }
+        }
+
+        btn_login_google.setOnClickListener {
+            val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
+
+            startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
         }
 
         tv_forgot_password.setOnClickListener {
@@ -54,6 +69,44 @@ class LoginActivity : AppCompatActivity() {
                 }
             } else {
                 toast("An unexpected error occurred, please try again.")
+            }
+        }
+    }
+
+    private fun getGoogleApiClient(): GoogleApiClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        return GoogleApiClient.Builder(this)
+            .enableAutoManage(this, this)
+            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+            .build()
+    }
+
+    private fun loginByGoogleAccountIntoFirebase(googleAccount: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(googleAccount.idToken, null)
+
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this) {
+            toast("Sign In by Google")
+        }
+    }
+
+    override fun onConnectionFailed(connection: ConnectionResult) {
+        toast("Connection Failed!!!")
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+
+            if (result!!.isSuccess) {
+                val account = result.signInAccount
+
+                loginByGoogleAccountIntoFirebase(account!!)
             }
         }
     }
