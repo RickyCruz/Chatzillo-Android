@@ -9,14 +9,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import com.konztic.chatzillo.R
 import com.konztic.chatzillo.adapters.ChatAdapter
 import com.konztic.chatzillo.models.Message
 import com.konztic.chatzillo.utilities.toast
 import kotlinx.android.synthetic.main.fragment_chat.view.*
 import java.util.*
+import java.util.EventListener
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -32,6 +32,8 @@ class ChatFragment : Fragment() {
     private val store: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var chatDBRef: CollectionReference
 
+    private var chatSubscription: ListenerRegistration? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _view =  inflater.inflate(R.layout.fragment_chat, container, false)
 
@@ -39,6 +41,7 @@ class ChatFragment : Fragment() {
         setUpCurrentUser()
         setUpRecyclerView()
         setUpChatBtn()
+        subscribeToChatMessages()
 
         return _view
     }
@@ -90,5 +93,24 @@ class ChatFragment : Fragment() {
             .addOnFailureListener {
                 activity!!.toast("Message error, try again!")
             }
+    }
+
+    private fun subscribeToChatMessages() {
+        chatSubscription = chatDBRef
+            .addSnapshotListener(object : EventListener, com.google.firebase.firestore.EventListener<QuerySnapshot> {
+                override fun onEvent(snapshot: QuerySnapshot?, exception: FirebaseFirestoreException?) {
+                    exception?.let {
+                        activity!!.toast("Exception!")
+                        return
+                    }
+
+                    snapshot?.let {
+                        messageList.clear()
+                        val messages = it.toObjects(Message::class.java)
+                        messageList.addAll(messages)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            })
     }
 }
