@@ -82,7 +82,7 @@ class ChatFragment : Fragment() {
         val newMessage = HashMap<String, Any>()
 
         newMessage["authorId"] = message.authorId
-        newMessage["message"] = message.message
+        newMessage["message"] = message.message.trim()
         newMessage["profileImageURL"] = message.profileImageURL
         newMessage["sentAt"] = message.sentAt
 
@@ -97,6 +97,8 @@ class ChatFragment : Fragment() {
 
     private fun subscribeToChatMessages() {
         chatSubscription = chatDBRef
+            .orderBy("sentAt", Query.Direction.DESCENDING)
+            .limit(100)
             .addSnapshotListener(object : EventListener, com.google.firebase.firestore.EventListener<QuerySnapshot> {
                 override fun onEvent(snapshot: QuerySnapshot?, exception: FirebaseFirestoreException?) {
                     exception?.let {
@@ -107,10 +109,16 @@ class ChatFragment : Fragment() {
                     snapshot?.let {
                         messageList.clear()
                         val messages = it.toObjects(Message::class.java)
-                        messageList.addAll(messages)
+                        messageList.addAll(messages.asReversed())
                         adapter.notifyDataSetChanged()
+                        _view.recycler_view.smoothScrollToPosition(messageList.size)
                     }
                 }
             })
+    }
+
+    override fun onDestroyView() {
+        chatSubscription?.remove()
+        super.onDestroyView()
     }
 }

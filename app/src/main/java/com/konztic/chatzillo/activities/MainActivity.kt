@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import androidx.viewpager.widget.ViewPager
-import com.google.firebase.auth.FirebaseAuth
 import com.konztic.chatzillo.R
 import com.konztic.chatzillo.adapters.PagerAdapter
 import com.konztic.chatzillo.common.ToolbarActivity
