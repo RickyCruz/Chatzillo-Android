@@ -8,12 +8,11 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.*
 import com.konztic.chatzillo.R
-import kotlinx.android.synthetic.main.fragment_chat_item_right.view.*
+import com.konztic.chatzillo.utilities.toast
 import kotlinx.android.synthetic.main.fragment_info.view.*
+import java.util.EventListener
 
 class InfoFragment : Fragment() {
     private lateinit var _view: View
@@ -32,6 +31,9 @@ class InfoFragment : Fragment() {
         setUpChatDB()
         setUpCurrentUser()
         setUpCurrentUserInfoUI()
+
+        // Total Messages Firebase Style
+        subscribeToTotalMessagesFirebaseStyle()
 
         return _view
     }
@@ -55,5 +57,23 @@ class InfoFragment : Fragment() {
             Glide.with(this).load(R.drawable.ic_person).override(128, 128)
                 .circleCrop().into(_view.image_view_info_avatar)
         }
+    }
+
+    private fun subscribeToTotalMessagesFirebaseStyle() {
+        chatSubscription = chatDBRef.addSnapshotListener(object : EventListener, com.google.firebase.firestore.EventListener<QuerySnapshot> {
+            override fun onEvent(querySnapshot: QuerySnapshot?, exception: FirebaseFirestoreException?) {
+                exception?.let {
+                    activity!!.toast("Exception!")
+                    return
+                }
+
+                querySnapshot?.let { _view.text_view_info_total_messages.text = "${it.size()}" }
+            }
+        })
+    }
+
+    override fun onDestroyView() {
+        chatSubscription?.remove()
+        super.onDestroyView()
     }
 }
