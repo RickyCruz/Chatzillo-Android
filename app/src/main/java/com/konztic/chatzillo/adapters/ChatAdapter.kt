@@ -4,11 +4,10 @@ import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.konztic.chatzillo.R
 import com.konztic.chatzillo.models.Message
-import com.konztic.chatzillo.utilities.CircleTransform
 import com.konztic.chatzillo.utilities.inflate
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_chat_item_left.view.*
 import kotlinx.android.synthetic.main.fragment_chat_item_right.view.*
 import java.text.SimpleDateFormat
@@ -46,8 +45,20 @@ class ChatAdapter(val items: List<Message>, val userId: String): RecyclerView.Ad
         fun bind(message: Message) = with(itemView) {
             textViewMessageRight.text = message.message
             textViewTimeRight.text = SimpleDateFormat("hh:mm").format(message.sentAt)
-            Picasso.get().load(message.profileImageURL).resize(100, 100)
-                .centerCrop().transform(CircleTransform()).into(imageViewProfileRight)
+
+            if (message.profileImageURL.isEmpty()) {
+                Glide.with(itemView)
+                    .load(R.drawable.ic_person)
+                    .override(64, 64)
+                    .circleCrop()
+                    .into(imageViewProfileRight)
+            } else {
+                Glide.with(itemView)
+                    .load(message.profileImageURL)
+                    .override(64, 64)
+                    .circleCrop()
+                    .into(imageViewProfileRight)
+            }
         }
     }
 
@@ -56,8 +67,20 @@ class ChatAdapter(val items: List<Message>, val userId: String): RecyclerView.Ad
         fun bind(message: Message) = with(itemView) {
             textViewMessageLeft.text = message.message
             textViewTimeLeft.text = SimpleDateFormat("hh:mm").format(message.sentAt)
-            Picasso.get().load(message.profileImageURL).resize(100, 100)
-                .centerCrop().transform(CircleTransform()).into(imageViewProfileLeft)
+
+            if (message.profileImageURL.isEmpty()) {
+                Glide.with(itemView)
+                    .load(R.drawable.ic_person)
+                    .override(64, 64)
+                    .circleCrop()
+                    .into(imageViewProfileLeft)
+            } else {
+                Glide.with(itemView)
+                    .load(message.profileImageURL)
+                    .override(64, 64)
+                    .circleCrop()
+                    .into(imageViewProfileLeft)
+            }
         }
     }
 }

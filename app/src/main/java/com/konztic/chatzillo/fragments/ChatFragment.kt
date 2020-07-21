@@ -67,12 +67,11 @@ class ChatFragment : Fragment() {
     private fun setUpChatDB() {
         _view.button_send.setOnClickListener {
             val messageText = _view.edit_text_message.text.toString()
+
             if (messageText.isNotEmpty()) {
-
-                val message = Message(currentUser.uid, messageText, currentUser.photoUrl.toString(), Date())
-
+                val photo = currentUser.photoUrl?.let { currentUser.photoUrl.toString() } ?: run { "" }
+                val message = Message(currentUser.uid, messageText, photo, Date())
                 saveMessage(message)
-
                 _view.edit_text_message.text = null
             }
         }
