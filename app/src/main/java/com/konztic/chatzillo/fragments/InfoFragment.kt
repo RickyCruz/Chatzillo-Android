@@ -10,7 +10,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.konztic.chatzillo.R
+import com.konztic.chatzillo.models.TotalMessagesEvent
+import com.konztic.chatzillo.utilities.RxBus
 import com.konztic.chatzillo.utilities.toast
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_info.view.*
 import java.util.EventListener
 
@@ -33,7 +36,10 @@ class InfoFragment : Fragment() {
         setUpCurrentUserInfoUI()
 
         // Total Messages Firebase Style
-        subscribeToTotalMessagesFirebaseStyle()
+        // subscribeToTotalMessagesFirebaseStyle()
+
+        // Total Messages Event Bus + Reactive Style
+        subscribeToTotalMessagesEventBusReactiveStyle()
 
         return _view
     }
@@ -70,6 +76,12 @@ class InfoFragment : Fragment() {
                 querySnapshot?.let { _view.text_view_info_total_messages.text = "${it.size()}" }
             }
         })
+    }
+
+    private fun subscribeToTotalMessagesEventBusReactiveStyle() {
+        RxBus.listen(TotalMessagesEvent::class.java).subscribe {
+            _view.text_view_info_total_messages.text = "${it.total}"
+        }
     }
 
     override fun onDestroyView() {

@@ -13,6 +13,8 @@ import com.google.firebase.firestore.*
 import com.konztic.chatzillo.R
 import com.konztic.chatzillo.adapters.ChatAdapter
 import com.konztic.chatzillo.models.Message
+import com.konztic.chatzillo.models.TotalMessagesEvent
+import com.konztic.chatzillo.utilities.RxBus
 import com.konztic.chatzillo.utilities.toast
 import kotlinx.android.synthetic.main.fragment_chat.view.*
 import java.util.*
@@ -111,6 +113,7 @@ class ChatFragment : Fragment() {
                         messageList.addAll(messages.asReversed())
                         adapter.notifyDataSetChanged()
                         _view.recycler_view.smoothScrollToPosition(messageList.size)
+                        RxBus.publish(TotalMessagesEvent(messageList.size))
                     }
                 }
             })
