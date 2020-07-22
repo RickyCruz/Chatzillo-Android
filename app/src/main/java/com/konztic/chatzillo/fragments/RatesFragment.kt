@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +18,7 @@ import com.konztic.chatzillo.dialogs.RateDialog
 import com.konztic.chatzillo.models.NewRateEvent
 import com.konztic.chatzillo.models.Rate
 import com.konztic.chatzillo.utilities.RxBus
+import com.konztic.chatzillo.utilities.toast
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_rates.view.*
 
@@ -76,7 +76,19 @@ class RatesFragment : Fragment() {
     }
 
     private fun saveRate(rate: Rate) {
+        val newRating = HashMap<String, Any>()
+        newRating["text"] = rate.text
+        newRating["rate"] = rate.rate
+        newRating["createdAt"] = rate.createdAt
+        newRating["profileImgURL"] = rate.profileImgURL
 
+        ratesDBRef.add(newRating)
+            .addOnCompleteListener {
+                activity!!.toast("Rating added!")
+            }
+            .addOnFailureListener {
+                activity!!.toast("Rating error, try again!")
+            }
     }
 
     private fun subscribeToRatings() {

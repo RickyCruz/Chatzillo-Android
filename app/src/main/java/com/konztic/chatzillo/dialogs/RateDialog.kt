@@ -16,10 +16,8 @@ import java.util.*
 
 class RateDialog: DialogFragment() {
 
-     @SuppressLint("InflateParams")
-     private val dialogLayout = activity!!.layoutInflater.inflate(R.layout.dialog_rate, null)
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialogLayout = activity!!.layoutInflater.inflate(R.layout.dialog_rate, null)
 
         return AlertDialog.Builder(context!!)
             .setTitle(getString(R.string.dialog_title))
