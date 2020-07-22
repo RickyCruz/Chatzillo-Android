@@ -9,9 +9,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.*
 import com.konztic.chatzillo.R
 import com.konztic.chatzillo.adapters.RatesAdapter
 import com.konztic.chatzillo.dialogs.RateDialog
@@ -21,6 +19,10 @@ import com.konztic.chatzillo.utilities.RxBus
 import com.konztic.chatzillo.utilities.toast
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_rates.view.*
+import java.util.*
+import java.util.EventListener
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class RatesFragment : Fragment() {
 
@@ -92,6 +94,25 @@ class RatesFragment : Fragment() {
     }
 
     private fun subscribeToRatings() {
+        ratesSubscription = ratesDBRef
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .addSnapshotListener(object : EventListener, com.google.firebase.firestore.EventListener<QuerySnapshot> {
+                override fun onEvent(snapshot: QuerySnapshot?, exception: FirebaseFirestoreException?) {
+                    exception?.let {
+                        activity!!.toast("Exception!")
+                        return
+                    }
+
+                    snapshot?.let {
+                        rates.clear()
+                        val ratesList = it.toObjects(Rate::class.java)
+                        rates.addAll(ratesList)
+
+                        adapter.notifyDataSetChanged()
+                        _view.recycler_view.smoothScrollToPosition(0)
+                    }
+                }
+            })
     }
 
     private fun subscribeToNewRatings() {
