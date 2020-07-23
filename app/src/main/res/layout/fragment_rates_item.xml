@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="22 Jul 2020"
-                    android:textColor="@color/colorSecondaryText"
+                    android:textColor="@color/colorRateText"
                     android:textSize="12sp"
                     card_view:layout_constraintBottom_toBottomOf="parent"
                     card_view:layout_constraintStart_toEndOf="@+id/image_view_calendar"
@@ -85,8 +85,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:text="4,5"
-                    android:textColor="@color/colorSecondaryText"
-                    android:textSize="10sp"
+                    android:textColor="@color/colorRateText"
+                    android:textSize="12sp"
                     card_view:layout_constraintBottom_toBottomOf="parent"
                     card_view:layout_constraintEnd_toStartOf="@+id/image_view_star"
                     card_view:layout_constraintTop_toTopOf="parent"/>
@@ -100,7 +100,8 @@
                     card_view:layout_constraintBottom_toBottomOf="parent"
                     card_view:layout_constraintEnd_toEndOf="parent"
                     card_view:layout_constraintStart_toStartOf="parent"
-                    card_view:layout_constraintTop_toTopOf="@+id/view_separator"/>
+                    card_view:layout_constraintTop_toTopOf="@+id/view_separator"
+                    android:contentDescription="@string/app_name" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

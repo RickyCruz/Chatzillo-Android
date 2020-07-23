@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
@@ -19,7 +20,6 @@ import com.konztic.chatzillo.utilities.RxBus
 import com.konztic.chatzillo.utilities.toast
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_rates.view.*
-import java.util.*
 import java.util.EventListener
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -30,6 +30,7 @@ class RatesFragment : Fragment() {
 
     private lateinit var adapter: RatesAdapter
     private val rates: ArrayList<Rate> = ArrayList()
+    private lateinit var scrollListener: RecyclerView.OnScrollListener
 
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var currentUser: FirebaseUser
@@ -71,6 +72,23 @@ class RatesFragment : Fragment() {
         _view.recycler_view.layoutManager = layoutManager
         _view.recycler_view.itemAnimator = DefaultItemAnimator()
         _view.recycler_view.adapter = adapter
+
+        scrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0 || dy < 0 && _view.fab_rating.isShown) {
+                    _view.fab_rating.hide()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    _view.fab_rating.show()
+                }
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        }
+
+        _view.recycler_view.addOnScrollListener(scrollListener)
     }
 
     private fun setUpFab() {
@@ -122,6 +140,7 @@ class RatesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        _view.recycler_view.removeOnScrollListener(scrollListener)
         rateBusListener.dispose()
         ratesSubscription?.remove()
         super.onDestroyView()

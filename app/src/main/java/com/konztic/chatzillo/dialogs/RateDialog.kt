@@ -24,10 +24,13 @@ class RateDialog: DialogFragment() {
             .setView(dialogLayout)
             .setPositiveButton(getString(R.string.dialog_ok)) { _, _ ->
                 val textRate = dialogLayout.edit_text_rate_feedback.text.toString()
-                val imgURL = FirebaseAuth.getInstance().currentUser!!.photoUrl?.toString() ?: run { "" }
-                val rate = Rate(textRate, dialogLayout.rating_bar_feedback.rating, Date(), imgURL)
 
-                RxBus.publish(NewRateEvent(rate))
+                if (textRate.isNotEmpty()) {
+                    val imgURL = FirebaseAuth.getInstance().currentUser!!.photoUrl?.toString() ?: run { "" }
+                    val rate = Rate(textRate, dialogLayout.rating_bar_feedback.rating, Date(), imgURL)
+
+                    RxBus.publish(NewRateEvent(rate))
+                }
             }
             .setNegativeButton(getString(R.string.dialog_cancel)) { _, _ ->
                 activity!!.toast("Canceled")
