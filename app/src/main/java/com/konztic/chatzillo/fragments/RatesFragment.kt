@@ -116,8 +116,14 @@ class RatesFragment : Fragment() {
     }
 
     private fun subscribeToNewRatings() {
-        RxBus.listen(NewRateEvent::class.java).subscribe {
+        rateBusListener = RxBus.listen(NewRateEvent::class.java).subscribe {
             saveRate(it.rate)
         }
+    }
+
+    override fun onDestroyView() {
+        rateBusListener.dispose()
+        ratesSubscription?.remove()
+        super.onDestroyView()
     }
 }

@@ -27,6 +27,7 @@ class InfoFragment : Fragment() {
     private lateinit var chatDBRef: CollectionReference
 
     private var chatSubscription: ListenerRegistration? = null
+    private lateinit var infoBusListener: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _view =  inflater.inflate(R.layout.fragment_info, container, false)
@@ -79,12 +80,13 @@ class InfoFragment : Fragment() {
     }
 
     private fun subscribeToTotalMessagesEventBusReactiveStyle() {
-        RxBus.listen(TotalMessagesEvent::class.java).subscribe {
+        infoBusListener = RxBus.listen(TotalMessagesEvent::class.java).subscribe {
             _view.text_view_info_total_messages.text = "${it.total}"
         }
     }
 
     override fun onDestroyView() {
+        infoBusListener.dispose()
         chatSubscription?.remove()
         super.onDestroyView()
     }
